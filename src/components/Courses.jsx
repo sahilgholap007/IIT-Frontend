@@ -1,13 +1,10 @@
-// src/components/Courses.js
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import CourseForm from './CourseForm';
+import CourseTable from './CourseTable';
 
 const Courses = () => {
     const [courses, setCourses] = useState([]);
-    const [title, setTitle] = useState('');
-    const [code, setCode] = useState('');
-    const [description, setDescription] = useState('');
 
     useEffect(() => {
         fetchCourses();
@@ -22,54 +19,9 @@ const Courses = () => {
         }
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            await axios.post('http://127.0.0.1:8000/api/courses/', {
-                title,
-                code,
-                description
-            });
-            setTitle('');
-            setCode('');
-            setDescription('');
-            fetchCourses();
-        } catch (error) {
-            console.error('Error adding course:', error);
-        }
-    };
-
     return (
-        <div>
-            <h2>Courses</h2>
-            <form onSubmit={handleSubmit}>
-                <input 
-                    type="text" 
-                    value={title} 
-                    onChange={(e) => setTitle(e.target.value)} 
-                    placeholder="Course Title"
-                />
-                <input 
-                    type="text" 
-                    value={code} 
-                    onChange={(e) => setCode(e.target.value)} 
-                    placeholder="Course Code"
-                />
-                <textarea 
-                    value={description} 
-                    onChange={(e) => setDescription(e.target.value)} 
-                    placeholder="Course Description"
-                />
-                <button type="submit">Add Course</button>
-            </form>
-
-            <ul>
-                {courses.map(course => (
-                    <li key={course.id}>
-                        {course.title} - {course.code}
-                    </li>
-                ))}
-            </ul>
+        <div className='flex gap-5'>
+            <CourseTable courses={courses} fetchCourses={fetchCourses} />
         </div>
     );
 };
