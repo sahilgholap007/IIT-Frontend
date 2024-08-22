@@ -7,8 +7,8 @@ const CourseInstances = () => {
     const [courseId, setCourseId] = useState('');
     const [courses, setCourses] = useState([]);
     const [courseInstances, setCourseInstances] = useState([]);
+    const [selectedInstance, setSelectedInstance] = useState(null); // State for selected course instance
 
-    // Fetch all courses and course instances on component mount
     useEffect(() => {
         fetchCourses();
         fetchCourseInstances();
@@ -56,14 +56,25 @@ const CourseInstances = () => {
         }
     };
 
-    const handleDelete = (instanceId) => {
-        // Implement delete logic here
-        console.log(`Deleting instance with ID: ${instanceId}`);
+    const handleDelete = async (instanceId) => {
+        try {
+            await axios.delete(`http://127.0.0.1:8000/api/instances/${instanceId}/`);
+            fetchCourseInstances(); // Re-fetch course instances after deletion
+            if (selectedInstance?.id === instanceId) {
+                setSelectedInstance(null); // Clear selected instance if it was deleted
+            }
+        } catch (error) {
+            console.error('Error deleting course instance:', error);
+        }
     };
 
     const handleExplore = (instanceId) => {
-        // Implement explore logic here
-        console.log(`Exploring instance with ID: ${instanceId}`);
+        const instance = courseInstances.find(inst => inst.id === instanceId);
+        setSelectedInstance(instance); // Set the selected instance for exploration
+    };
+
+    const handleClose = () => {
+        setSelectedInstance(null); // Clear the selected instance to close the explore section
     };
 
     const getCourseCodeById = (courseTitle) => {
@@ -141,6 +152,27 @@ const CourseInstances = () => {
                     </tbody>
                 </table>
             </div>
+
+            {/* Explore Section */}
+            {selectedInstance && (
+                <div className="mt-5 p-5 border border-gray-300 rounded-md bg-gray-50">
+                    <div className="flex justify-between items-center">
+                        <h3 className="text-2xl font-semibold">Course Instance Details</h3>
+                        <button
+                            onClick={handleClose}
+                            className="bg-gray-300 text-gray-700 px-3 py-1 rounded hover:bg-gray-400"
+                        >
+                            Close
+                        </button>
+                    </div>
+                    <p><strong>Course Title:</strong> {selectedInstance.course_title}</p>
+                    <p><strong>Course Code:</strong> {getCourseCodeById(selectedInstance.course_title)}</p>
+                    <p><strong>Year:</strong> {selectedInstance.year}</p>
+                    <p><strong>Semester:</strong> {selectedInstance.semester}</p>
+                    <p><strong>Description:</strong> {selectedInstance.description}</p>
+
+                </div>
+            )}
         </div>
     );
 };

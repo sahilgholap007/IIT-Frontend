@@ -39,7 +39,7 @@ const AddCourseInstance = () => {
           setYear('');
           setSemester('');
           setCourseId('');
-          fetchCourses(); // Refresh the courses after adding a new instance
+          fetchCourses();
         })
         .catch((error) => {
           console.error('Error adding course instance:', error);
